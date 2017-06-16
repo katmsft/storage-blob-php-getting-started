@@ -39,7 +39,7 @@ require_once "./random_string.php";
 use Config;
 use MicrosoftAzure\Storage\Common\ServicesBuilder;
 use MicrosoftAzure\Storage\Common\ServiceException;
-use MicrosoftAzure\Storage\Blob\Models\PageRange;
+use MicrosoftAzure\Storage\Common\Models\Range;
 use MicrosoftAzure\Storage\Blob\Models\ListPageBlobRangesOptions;
 use MicrosoftAzure\Storage\Blob\Models\GetBlobOptions;
 use MicrosoftAzure\Storage\Blob\Models\DeleteBlobOptions;
@@ -131,8 +131,8 @@ class BlobBasicSamples
       # Create pages in a page blob
       echo "Create pages in a page blob".PHP_EOL;
      
-      $blobService->createBlobPages($containerName, $blobName, new PageRange(0, 511), generateRandomString(512));
-      $blobService->createBlobPages($containerName, $blobName, new PageRange(512, 1023), generateRandomString(512));
+      $blobService->createBlobPages($containerName, $blobName, new Range(0, 511), generateRandomString(512));
+      $blobService->createBlobPages($containerName, $blobName, new Range(512, 1023), generateRandomString(512));
 
       # List page blob ranges
       $listPageBlobRangesOptions = new ListPageBlobRangesOptions();
@@ -142,12 +142,12 @@ class BlobBasicSamples
       echo "List Page Blob Ranges".PHP_EOL;
       $listPageBlobRangesResult = $blobService->listPageBlobRanges($containerName, $blobName, $listPageBlobRangesOptions);
       
-      foreach ($listPageBlobRangesResult->getPageRanges() as $pageRange) {
-        echo "Range:".$pageRange->getStart()."-".$pageRange->getEnd().PHP_EOL;
+      foreach ($listPageBlobRangesResult->getRanges() as $range) {
+        echo "Range:".$range->getStart()."-".$range->getEnd().PHP_EOL;
 
         $getBlobOptions = new GetBlobOptions();
-        $getBlobOptions->setRangeStart($pageRange->getStart());
-        $getBlobOptions->setRangeEnd($pageRange->getEnd());
+        $getBlobOptions->setRangeStart($range->getStart());
+        $getBlobOptions->setRangeEnd($range->getEnd());
 
         $getBlobResult = $blobService->getBlob($containerName, $blobName, $getBlobOptions);
 
